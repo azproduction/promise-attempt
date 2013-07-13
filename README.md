@@ -1,4 +1,4 @@
-# (UNSTABLE) promise-attempt
+# promise-attempt
 
 Attempt tries to resolve promises.
 
@@ -11,7 +11,7 @@ network lags with 0 code.
 
 ```js
 attempt.configure(function () {
-    return $.Deferred() || new Promise();
+    return $.Deferred() || require('vow').promise();
 });
 ```
 
