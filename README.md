@@ -1,4 +1,4 @@
-# promise-attempt [![Build Status](https://travis-ci.org/azproduction/promise-attempt.png?branch=master)](https://travis-ci.org/azproduction/promise-attempt)
+# promise-attempt [![Build Status](https://travis-ci.org/azproduction/promise-attempt.png?branch=master)](https://travis-ci.org/azproduction/promise-attempt) [![Coverage Status](https://coveralls.io/repos/azproduction/promise-attempt/badge.png?branch=master)](https://coveralls.io/r/azproduction/promise-attempt)
 
 Attempt tries to resolve promises.
 
