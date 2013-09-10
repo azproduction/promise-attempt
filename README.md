@@ -2,8 +2,8 @@
 
 Attempt tries to resolve promises.
 
-For example attempt can try to get valuable data from server over unstable mobile networks. Or can handle some unexpected
-network lags with 0 code.
+ - Can try to get valuable data from server over unstable mobile networks. 
+ - Can handle some unexpected network lags with 0 code or timeouts.
 
 ## Examples
 
@@ -22,20 +22,24 @@ attempt(function promiseFactory() {
    return $.getJSON('/json');
 },
 function decision(err, attemptNo) {
-    // 404 - no reason to continue
-    if (err.status === 404) return false || null || void 0;
+    // if not timeout (null)
+    // and 0 < status < 500 - no reason to continue
+    if (err && err.status > 0 && err.status < 500) {
+        return false || null || void 0;
+    }
 
-    // To many attempts, net totally down
+    // To many attempts - network or server totally down
     if (attemptNo > 5) {
         return false;
     }
 
+    // repeat request in N * 2000 ms
     return attemptNo * 2000;
 })
 .then(resolve, reject, progress);
 
 function resolve(data) {
-    yourStuff(data);
+    return processData(data);
 }
 
 function reject(error) {
