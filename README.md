@@ -7,6 +7,8 @@ Attempt tries to resolve promises.
 
 ## Examples
 
+[Live example](http://jsfiddle.net/j8bSF/) 
+
 ### Configure attempt
 
 ```js
