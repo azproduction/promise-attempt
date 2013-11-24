@@ -5,9 +5,55 @@ Attempt tries to resolve promises.
  - Can try to get valuable data from server over unstable mobile networks. 
  - Can handle some unexpected network lags with 0 code or timeouts.
 
-## Examples
+For example, user of your service have some critical data and you want to deliver it to your server.
+User browsing under unstable and slow cellular network. You may give up on first fail or try to fix this problem,
+using callback hell or use this solution :)
 
+Assume you have rule which defines behaviour of sending requests:
+ - status >= 500 - no reason to repeat, your server totally down
+ - status = 400 - no reason to repeat, something wrong with input data
+ - each next repeat should be performed in N * 500ms where N is attempt number
+ - status = 0 (aka abort) - repeat
+ - if number of repeats is more than 5 - ask user what repeat or not
+ - if number of repeats is more than 10 - do not repeat
+
+And instead of calling promise directly
+```js
+$.getJSON('/json')
+.then(resolve, reject, progress);
+```
+
+wrap it with 
+```js
+new Attempt(function () {
+    return $.getJSON('/json');
+},
+function repeatRules(err, attemptNo) {
+    // no reason to repeat
+    if (err && (err.status === 400 || err.status >= 500)) {
+        return false;
+    }
+    
+    // if number of repeats is more than 10 - do not repeat
+    if (attemptNo > 10) {
+        return false;
+    }
+    
+    // if number of repeats is more than 5 - ask user what repeat or not
+    if (attemptNo > 5) {
+        return askUserWhatToDo().pipe(function () {
+             return attemptNo * 500;
+        });
+    }
+    
+    // each next repeat should be performed in N * 500ms
+    return attemptNo * 500;
+})
+.then(resolve, reject, progress);
+```
 [Live example](http://jsfiddle.net/j8bSF/) 
+
+## Examples
 
 ### Configure attempt
 
