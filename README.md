@@ -9,12 +9,12 @@ For example, user of your service have some critical data and you want to delive
 User browsing under unstable and slow cellular network. You may give up on first fail or try to fix this problem,
 using callback hell or use this solution :)
 
-Assume you have rule which defines behaviour of sending requests:
- - status >= 500 - no reason to repeat, your server totally down
- - status = 400 - no reason to repeat, something wrong with input data
- - each next repeat should be performed in N * 500ms where N is attempt number
- - status = 0 (aka abort) - repeat
- - if number of repeats is more than 5 - ask user what repeat or not
+Assume you have rule which defines behaviour of repeating requests:
+ - each next repeat should be performed in `N * 500ms`, where N is attempt number
+ - `error.status >= 500` - no reason to repeat, your server totally down
+ - `error.status === 400` - no reason to repeat, something wrong with input data
+ - `error.status === 0` (aka abort) - repeat
+ - if number of repeats is more than 5 - ask user continue to repeat or not
  - if number of repeats is more than 10 - do not repeat
 
 And instead of calling promise directly
