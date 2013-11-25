@@ -11,7 +11,7 @@ using callback hell or use this solution :)
 
 Assume you have rule which defines behaviour of repeating requests:
  - each next repeat should be performed in `N * 500ms`, where N is attempt number
- - `error.status >= 500` - no reason to repeat, your server totally down
+ - `error.status >= 500` - no reason to repeat, your service is totally down
  - `error.status === 400` - no reason to repeat, something wrong with input data
  - `error.status === 0` (aka abort) - repeat
  - if number of repeats is more than 5 - ask user continue to repeat or not
