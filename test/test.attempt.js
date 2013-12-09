@@ -1,8 +1,28 @@
-var vow = require('vow'),
-    chai = require('chai'),
-    expect = chai.expect,
-    Attempt = require('..'),
+/* jshint expr:true */
+var vm = require('vm'),
+    fs = require('fs'),
+    vow = require('vow'),
+    sinon = require('sinon'),
+    chai = require('chai').use(require('sinon-chai')),
+    expect = chai.expect;
+
+var attemptSrc = require.resolve(process.env.PROMISE_ATTEMPT_COVERAGE ? '../lib-cov' : '../lib'),
+    attemptCode = fs.readFileSync(attemptSrc, 'utf8');
+
+var Attempt,
+    attempt;
+
+function clean() {
+    try {
+        delete require.cache[require.resolve('..')];
+        delete require.cache[attemptSrc];
+    } catch (e) {}
+}
+
+function reset() {
+    Attempt = require('..');
     attempt = Attempt;
+}
 
 function configure() {
     Attempt.configure(function () {
@@ -10,7 +30,51 @@ function configure() {
     });
 }
 
-describe('attempt', function () {
+describe('attempt export', function () {
+    beforeEach(function () {
+        clean();
+    });
+
+    it('attempt should be exported in commonjs environment', function () {
+        expect(require('..')).to.be.a('function');
+    });
+
+    it('attempt should be exported in AMD environment', function () {
+        var define = sinon.spy();
+        define.amd = {};
+
+        var newGlobal = {
+            global: {
+                __coverage__: global.__coverage__
+            },
+            define: define
+        };
+
+        vm.runInNewContext(attemptCode, newGlobal);
+
+        expect(define).to.have.been.calledOnce;
+        expect(define).to.have.been.calledWithMatch(sinon.match.func);
+    });
+
+    it('attempt should be exported in browser or worker environment', function () {
+        var newGlobal = {
+            global: {
+                __coverage__: global.__coverage__
+            }
+        };
+
+        vm.runInNewContext(attemptCode, newGlobal);
+
+        expect(newGlobal.attempt).to.be.a('function');
+    });
+});
+
+describe('attempt.configure()', function () {
+    beforeEach(function () {
+        clean();
+        reset();
+    });
+
     it('attempt.then() should throw an exception if attempt is not configured', function () {
         expect(function () {
             attempt(function () {
@@ -20,8 +84,12 @@ describe('attempt', function () {
     });
 });
 
-describe('attempt', function () {
-    beforeEach(configure);
+describe('attempt()', function () {
+    beforeEach(function () {
+        clean();
+        reset();
+        configure();
+    });
 
     it('can be constructed via new operator', function () {
         expect(new Attempt(vow.fulfill)).to.have.property('then');
