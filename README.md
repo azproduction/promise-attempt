@@ -51,7 +51,7 @@ function repeatRules(err, attemptNo) {
 })
 .then(resolve, reject, progress);
 ```
-[Live example](http://jsfiddle.net/j8bSF/)
+[Live example](http://jsfiddle.net/j8bSF/1/)
 
 ## Examples
 
@@ -69,7 +69,7 @@ Or use old-style promises approach:
 attempt.configure(function (handler) {
     var dfd = $.Deferred();
     try {
-        handler(dfd.resolve, dfd.reject, dfd.progress);
+        handler(dfd.resolve, dfd.reject, dfd.notify);
     } catch (e) {
         dfd.reject(e);
     }
