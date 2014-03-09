@@ -2,7 +2,7 @@
     "author" : "Mikhail Davydov <i@azproduction.ru>",
     "description" : "Attempt tries to resolve promises",
     "name" : "promise-attempt",
-    "version" : "1.0.1",
+    "version" : "2.0.0",
     "contributors" : [
         {
             "name": "Mikhail Davydov",
@@ -22,7 +22,7 @@
         "sinon-chai": "*",
         "sinon": "*",
         "chai": ">= 1.7.2",
-        "vow": ">= 0.3.9",
+        "vow": "0.4.1",
         "coveralls": "*"
     },
     "scripts": {

@@ -25,9 +25,7 @@ function reset() {
 }
 
 function configure() {
-    Attempt.configure(function () {
-        return vow.promise();
-    });
+    Attempt.configure(vow.Promise);
 }
 
 describe('attempt export', function () {
@@ -75,12 +73,47 @@ describe('attempt.configure()', function () {
         reset();
     });
 
+    afterEach(function () {
+        delete global.Promise;
+    });
+
     it('attempt.then() should throw an exception if attempt is not configured', function () {
         expect(function () {
             attempt(function () {
                 return vow.fulfill(true);
             }).then(function () {});
         }).to.throw(Error);
+    });
+
+    it('attempt.then() should not throw an exception if global Promise exists', function () {
+        global.Promise = vow.Promise;
+        clean();
+        reset();
+
+        attempt(function () {
+            return vow.fulfill(true);
+        }).then(function () {});
+    });
+
+    it('ignores missing `progress` callback', function (done) {
+        Attempt.configure(function (handler) {
+            return new vow.Promise(function (resolve, reject) {
+                handler(resolve, reject);
+            });
+        });
+
+        attempt(function (error, attemptNo) {
+                return vow.fulfill(!!attemptNo);
+            }, function () {
+                return true;
+            })
+            .then(function () {
+                done();
+            }, function () {
+                done(Error('onRejected should not be called'));
+            }, function () {
+                done(Error('onProgressed should not be called'));
+            });
     });
 });
 
@@ -323,16 +356,15 @@ describe('attempt()', function () {
             return vow.fulfill(true);
         }
 
-
         function decisionGenerator() {
-            return 50;
+            return 10;
         }
 
         var time = Date.now();
         attempt(resolvesOnSecondAttempt, decisionGenerator)
             .then(function () {
                 try {
-                    expect(Date.now()).to.be.at.least(time + 50);
+                    expect(Date.now()).to.be.at.least(time + 10);
                 } catch (e) {
                     done(e);
                     return;
@@ -355,21 +387,4 @@ describe('attempt()', function () {
         });
     });
 
-    it('should call promise.resolve if promise.fulfill is undefined', function (done) {
-        attempt.configure(function () {
-            var promise = vow.promise();
-            promise.resolve = promise.fulfill;
-            promise.fulfill = void 0;
-            return promise;
-        });
-
-        attempt(function () {
-                return vow.fulfill();
-            })
-            .then(function () {
-                done();
-            }, function () {
-                done('fail');
-            });
-    });
 });

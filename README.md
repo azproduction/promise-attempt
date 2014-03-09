@@ -51,15 +51,29 @@ function repeatRules(err, attemptNo) {
 })
 .then(resolve, reject, progress);
 ```
-[Live example](http://jsfiddle.net/j8bSF/) 
+[Live example](http://jsfiddle.net/j8bSF/)
 
 ## Examples
 
 ### Configure attempt
 
+By default `Attempt` tries to use global Promises, but you can specify your own promises.
+
 ```js
-attempt.configure(function () {
-    return $.Deferred() || require('vow').promise();
+attempt.configure(require('vow').Promise);
+```
+
+Or use old-style promises approach:
+
+```js
+attempt.configure(function (handler) {
+    var dfd = $.Deferred();
+    try {
+        handler(dfd.resolve, dfd.reject, dfd.progress);
+    } catch (e) {
+        dfd.reject(e);
+    }
+    return dfd.promise();
 });
 ```
 
