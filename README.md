@@ -51,7 +51,7 @@ function repeatRules(err, attemptNo) {
 })
 .then(resolve, reject, progress);
 ```
-[Live example](http://jsfiddle.net/j8bSF/1/)
+[Live example](http://jsfiddle.net/j8bSF/2/)
 
 ## Examples
 
